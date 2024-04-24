@@ -35,7 +35,7 @@ You can see results in the folder that you create as a .txt file.
 To start, clone the repository using the following command in the terminal.
 Set up the necessary libraries and login to Weights & Biases:
 ```bash 
-!git clone "LINK TO REPO"
+!git clone https://github.com/SuleymanEmirAkin/Event-Based_Forward-Forward.git
 !pip install omegaconf
 !pip install hydra-core --upgrade
 !pip install wandb
