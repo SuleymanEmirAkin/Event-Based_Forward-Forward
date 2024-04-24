@@ -1,0 +1,31 @@
+seed: 42
+device: "cuda"  # cpu or cuda (GPU)
+
+name: # Name of the run
+
+input:
+  path: datasets
+  batch_size: 100 # Batch size
+  dataset: "mnist" # "mnist" or  "nmnist"
+
+model:
+  hidden_dim: 2000 # Number of ReLUs per hidden layer
+  num_layers: 3 # Number of hidden layers
+  top_down: True # True enables top-down connections, False disables
+
+training:
+  epochs: 200
+  frame_switch: -1 # For iterative training, -1 disables
+
+  learning_rate: 5e-5
+  weight_decay: 3e-4
+  momentum: 0.9
+
+  randomized: False # Only for top_down training procedure
+
+  backpropagation: False # True => BP. False => FF
+  unsupervised: True  # True => Unsupervised FF. False => Supervised FF
+
+hydra:
+  run:
+    dir: logs
