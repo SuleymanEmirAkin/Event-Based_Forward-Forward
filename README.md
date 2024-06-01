@@ -52,7 +52,7 @@ Adjust the configuration settings as necessary to fit your requirements.
 Finally, execute the main script with:
 
 ```bash
-!python ganFF/main.py
+!python Event-Based_Forward-Forward/main.py
 ```
 
 
