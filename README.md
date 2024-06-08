@@ -1,5 +1,5 @@
-# Applying the Forward-Forward Algorithm to the Event-Based Sensing Mode
-This is an implementation of the "Applying the Forward-Forward Algorithm to the Event-Based Sensing Mode" paper. 
+# Applying the Forward-Forward Algorithm to the Event-Based Sensing
+This is an implementation of the "Applying the Forward-Forward Algorithm to the Event-Based Sensing" paper. 
 
 Our paper: Accepted to The 7th International Conference on Machine Learning and Machine Intelligence (MLMI 2024)
 
