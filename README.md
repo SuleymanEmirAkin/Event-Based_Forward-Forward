@@ -17,9 +17,7 @@ The code performs tasks as defined in config.yml.
 
 ## Pretrained Models and Configurations
 
-[Link to pretrained models](https://drive.google.com/drive/folders/1WWv2uvlVXp3eaerJ0P0QrBhvDq46dFt-?usp=sharing) <be>
-
-All the configurations YAMLs used in the paper are in the configs_models folder.
+[Link to pretrained models and configurations](https://drive.google.com/drive/folders/1WWv2uvlVXp3eaerJ0P0QrBhvDq46dFt-?usp=sharing) <be>
 
 ## Testing Models
 
