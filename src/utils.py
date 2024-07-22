@@ -134,10 +134,10 @@ def get_NMNIST_partition(opt, partition):
 
     if partition in ["train", "val"]:
         train_dataset, val_dataset = torch.utils.data.random_split(dataset, [50000, 10000])
+        val_dataset_global = val_dataset
         if partition in ["train"]:
             dataset = train_dataset
         elif partition in ["val"]:
-            val_dataset_global = val_dataset
             dataset = val_dataset
 
     return dataset

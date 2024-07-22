@@ -1,5 +1,0 @@
-Train Accuracy: 0.9908799723386774
-Test Accuracy: 0.9686999702453616
------------------------------------------------------------
-Multi Pass Train Accuracy: 0.9874399698972719
-Multi Pass Test Accuracy: 0.9706999695301062

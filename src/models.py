@@ -242,6 +242,8 @@ class Model(torch.nn.Module):
 
             cum_output = []
             state = [torch.zeros(z_all.shape[0], channels, device=self.opt.device) for channels in self.num_channels]
+            if not self.opt.training.unsupervised:
+                state[-1] = z_all[:,0,0:10].clone()
             for f in range(9):
                 z = z_all[:,torch.randint(0, z_all.size(1), (1,))[0] if self.opt.training.randomized else min(max(f - 1, 0), z_all.size(1) - 1)]
                 z = self._layer_norm(z)
@@ -250,18 +252,17 @@ class Model(torch.nn.Module):
                     z = layer(torch.cat([z, self._layer_norm(state[idx + 1])], dim=1))
                     z = self.act_fn.apply(z)
                     if f < frame + 1:
-                        self._calc_loss(idx, z, posneg_labels, scalar_outputs, loop)
+                        self._calc_loss(idx, z, posneg_labels, scalar_outputs, loop * (frame + 1))
                     state[idx] = (z * 0.7 + state[idx] * 0.3).detach()
                     z = self._layer_norm(state[idx]).detach()
 
-                output = self.linear_classifier(z)
-                state[-1] = output.detach()
-                if f < frame + 1:
+                if self.opt.training.unsupervised:
+                    output = self.linear_classifier(z)
+                    state[-1] = output.detach()
                     classification_loss = self.classification_loss(output[: self.opt.input.batch_size], labels["class_labels"]) / loop
                     scalar_outputs["Loss"] += classification_loss 
                     scalar_outputs["classification_loss"] += classification_loss
-
-                cum_output.append(output[: self.opt.input.batch_size])
+                    cum_output.append(output[: self.opt.input.batch_size])
 
         if not self.opt.training.unsupervised:
             scalar_outputs = self.forward_downstream_multi_pass(
@@ -290,12 +291,16 @@ class Model(torch.nn.Module):
             z = self._layer_norm(z)
 
             for idx, layer in enumerate(self.model):
-                z = layer(torch.cat([z, torch.zeros(z.shape[0], self.num_channels[idx + 1], device=self.opt.device)], dim=1))
+                if len(self.model) - 1 == idx:
+                    z = layer(torch.cat([z, self._layer_norm(z_all[:, class_num, 0, :10])], dim=1))
+                else:
+                    z = layer(torch.cat([z, torch.zeros(z.shape[0], self.num_channels[idx + 1], device=self.opt.device)], dim=1))
                 z = self.act_fn.apply(z)
                 state.append(z * 0.7)
                 z = self._layer_norm(z)
 
-            state.append(self.linear_classifier(z))
+            # state.append(self.linear_classifier(z))
+            state.append(z_all[:, class_num, 0, :10].clone())
             ssq.append(torch.sum(state[-2] ** 2, dim=-1))
 
             for f in range(8): 
@@ -308,8 +313,8 @@ class Model(torch.nn.Module):
                     state[idx] = (z * 0.7 + state[idx] * 0.3)
                     z = self._layer_norm(state[idx])
 
-                output = self.linear_classifier(z)
-                state[-1] = output
+                # output = self.linear_classifier(z)
+                # state[-1] = output
 
                 ssq.append(torch.sum(state[-2] ** 2, dim=-1)) # bs # sum of squares of each activation
             ssq_all.append(ssq)
@@ -386,13 +391,12 @@ class Model(torch.nn.Module):
             state = [torch.zeros(z_all.shape[0], channels, device=self.opt.device) for channels in self.num_channels]
             for f in range(9):
                 z = z_all[:,torch.randint(0, z_all.size(1), (1,))[0] if self.opt.training.randomized and self.training else min(max(f - 1, 0), z_all.size(1) - 1)]
-                z = self._layer_norm(z)
 
                 for idx, layer in enumerate(self.model):
-                    z = layer(torch.cat([z, self._layer_norm(state[idx + 1])], dim=1))
+                    z = layer(torch.cat([z, state[idx + 1]], dim=1))
                     z = self.act_fn(z)
                     state[idx] = (z * 0.7 + state[idx] * 0.3)
-                    z = self._layer_norm(state[idx])
+                    z = state[idx].clone()
 
                 output = self.linear_classifier(z)
                 state[-1] = output
